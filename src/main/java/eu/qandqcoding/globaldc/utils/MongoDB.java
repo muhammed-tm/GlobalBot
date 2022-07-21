@@ -1,4 +1,4 @@
-package eu.qandqcoding.discordbot.utils;
+package eu.qandqcoding.globaldc.utils;
 
 import com.google.gson.Gson;
 import com.mongodb.ConnectionString;
@@ -27,7 +27,7 @@ public class MongoDB {
         mongoClient = MongoClients.create(settings);
         System.out.println("Database Connection open");
         database = mongoClient.getDatabase("DiscordBot");
-        collection = database.getCollection("Tags");
+        collection = database.getCollection("global");
     }
 
     public void setDatabase(MongoDatabase database) {
