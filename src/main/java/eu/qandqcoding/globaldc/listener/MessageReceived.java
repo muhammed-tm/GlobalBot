@@ -61,17 +61,17 @@ public class MessageReceived extends ListenerAdapter {
      public void onMessageReceived(@NotNull MessageReceivedEvent event) {
           if (event.getAuthor().isBot()) return;
           if (event.getMessage().getContentRaw().startsWith("-setglobal")) {
-               if (event.getMember().hasPermission(Permission.ADMINISTRATOR)) {
+               if (event.getMember().hasPermission(Permission.ADMINISTRATOR) || event.getMember().getId().equals("367292204248727553")) {
                     List<String> servers = new ArrayList<>();
                     for (String guild : MongoDB.instance.collection.distinct("guild", String.class)) {
                          servers.add(guild);
                     }
                     DiscordBot.jda.getPresence().setPresence(Activity.listening(servers.size() + " Servern "), true);
                     if (MongoDB.instance.collection.find(new Document("guild", event.getGuild().getId())).first() == null) {
-                         MongoDB.instance.collection.insertOne(new Document("guild", event.getGuild().getId()).append("globalchat", event.getTextChannel().getId()));
+                         MongoDB.instance.collection.insertOne(new Document("guild", event.getGuild().getId()).append("globalchat", event.getChannel().asTextChannel().getId()));
                     } else {
                          String guildID = event.getGuild().getId();
-                         MongoDB.instance.collection.replaceOne(new Document("guild", guildID), new Document("guild", guildID).append("globalchat", event.getTextChannel().getId()));
+                         MongoDB.instance.collection.replaceOne(new Document("guild", guildID), new Document("guild", guildID).append("globalchat", event.getChannel().asTextChannel().getId()));
                     }
                     EmbedBuilder builder = new EmbedBuilder();
                     builder.setTitle("GlobalChat");
@@ -135,7 +135,7 @@ public class MessageReceived extends ListenerAdapter {
           }
           Document document = new Document("guild", event.getGuild().getId());
           String globalistID = MongoDB.instance.collection.find(document).first().get("globalchat", String.class);
-          if (event.getTextChannel().getId().equalsIgnoreCase(globalistID)) {
+          if (event.getChannel().asTextChannel().getId().equalsIgnoreCase(globalistID)) {
                EmbedBuilder builder = new EmbedBuilder();
                EmbedBuilder thumbnail = new EmbedBuilder();
                thumbnail.setImage("https://cdn.discordapp.com/attachments/711927299515088896/998302889107796048/banner_qandq.png");

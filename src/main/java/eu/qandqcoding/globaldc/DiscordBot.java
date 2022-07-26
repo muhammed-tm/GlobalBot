@@ -5,9 +5,11 @@ import eu.qandqcoding.globaldc.utils.MongoDB;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
 import net.dv8tion.jda.api.entities.Activity;
+import net.dv8tion.jda.api.requests.GatewayIntent;
 
 import javax.security.auth.login.LoginException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 /*
@@ -17,7 +19,7 @@ import java.util.List;
 public class DiscordBot {
 
      public static JDA jda;
-     public static String token = "OTkzNjEyNDk2MzI3OTUwMzk2.Gf_LiQ.FV2sr9GRgGfWefDMzgOOlzPKf4Pjrh8lskLA5o";
+     public static String token = "OTkzNjEyNDk2MzI3OTUwMzk2.G2KGwS.BrhE7tpbsQIte47RMFf356jBlI0DxZgfVd-lqc";
 
      public static void main(String[] args) {
           buildJDA();
@@ -26,7 +28,7 @@ public class DiscordBot {
      public static void buildJDA() {
           new MongoDB();
           try {
-               jda = JDABuilder.createDefault(token).setRawEventsEnabled(true).build();
+               jda = JDABuilder.createDefault(token, Arrays.asList(GatewayIntent.values())).setRawEventsEnabled(true).build();
           } catch (LoginException ignored) {
           }
           jda.updateCommands().queue();
