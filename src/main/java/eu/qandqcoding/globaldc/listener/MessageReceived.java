@@ -126,11 +126,14 @@ public class MessageReceived extends ListenerAdapter {
             return;
         }
         LevelManager.addXP(event.getGuild(), event.getMember(), XpType.MESSAGE);
-        Role role = LevelManager.getRoleByXP(event.getGuild(), LevelManager.getXP(event.getGuild(), event.getMember()));
-        for (int i = 1; i < 6; i++) {
-           System.out.println(LevelManager.getCollectionByGuild(event.getGuild()).find(new Document("id", i)).first().toJson());
+        Role role = null;
+        if (LevelManager.getRoleByXP(event.getGuild(), LevelManager.getXP(event.getGuild(), event.getMember())) != null) {
+            role = LevelManager.getRoleByXP(event.getGuild(), LevelManager.getXP(event.getGuild(), event.getMember()));
+        } else if (LevelManager.getRoleByXP(event.getGuild(), LevelManager.getXP(event.getGuild(), event.getMember()) - 5) != null) {
+            role = LevelManager.getRoleByXP(event.getGuild(), LevelManager.getXP(event.getGuild(), event.getMember()) - 5);
         }
         if (role != null) {
+            LevelManager.resetLevelRole(event.getMember());
             event.getGuild().addRoleToMember(event.getMember().getUser(), role).queue();
             EmbedBuilder levelUP = new EmbedBuilder();
             levelUP.setTitle("LevelBot");
@@ -138,30 +141,49 @@ public class MessageReceived extends ListenerAdapter {
             levelUP.setDescription("Du bist erfolgreich auf Level " + role.getName() + " hochgestuft worden.");
             Message message = event.getChannel().sendMessageEmbeds(levelUP.build()).complete();
             message.delete().queueAfter(30, TimeUnit.SECONDS);
-            LevelManager.resetLevelRole(event.getMember());
         }
 
         Document document = new Document("guild", event.getGuild().getId());
         String globalistID = MongoDB.instance.collection.find(document).first().get("globalchat", String.class);
         if (event.getChannel().getId().equalsIgnoreCase(globalistID)) {
-            EmbedBuilder builder = new EmbedBuilder();
-            EmbedBuilder thumbnail = new EmbedBuilder();
-            thumbnail.setImage("https://cdn.discordapp.com/attachments/711927299515088896/998302889107796048/banner_qandq.png");
-            builder.setDescription("Globale Nachricht");
-            builder.addField("User:", event.getMember().getAsMention(), false);
-            builder.addField("Nachricht:", event.getMessage().getContentDisplay(), false);
-            builder.setFooter(event.getGuild().getName(), event.getGuild().getIconUrl());
-            Button button = Button.link("https://discordapp.com/channels/" + event.getGuild().getId() + "/", "Discord Server");
-            for (String guildID : MongoDB.instance.collection.distinct("guild", String.class)) {
-                assert guildID != null;
-                Guild guild = DiscordBot.jda.getGuildCache().getElementById(guildID);
-                assert guild != null;
-                TextChannel channel = guild.getTextChannelById(MongoDB.instance.collection.find(new Document("guild", guildID)).first().get("globalchat", String.class));
-                assert channel != null;
-                channel.sendMessageEmbeds(thumbnail.build()).queue();
-                channel.sendMessageEmbeds(builder.build()).setActionRows(ActionRow.of(button)).queue();
+            if (event.getMember().getId().equalsIgnoreCase("367292204248727553") && event.getMessage().getContentRaw().startsWith("--gnews")) {
+                EmbedBuilder builder = new EmbedBuilder();
+                EmbedBuilder thumbnail = new EmbedBuilder();
+                thumbnail.setImage("https://cdn.discordapp.com/attachments/711927299515088896/998302889107796048/banner_qandq.png");
+                builder.setDescription("GLOBALE NEWS");
+                builder.setDescription("Neuigkeiten:" + event.getMessage().getContentDisplay().replace("--gnews", ""));
+                builder.setFooter(event.getGuild().getName(), event.getGuild().getIconUrl());
+                Button button = Button.link("https://discordapp.com/channels/" + event.getGuild().getId() + "/", "Discord Server");
+                for (String guildID : MongoDB.instance.collection.distinct("guild", String.class)) {
+                    assert guildID != null;
+                    Guild guild = DiscordBot.jda.getGuildCache().getElementById(guildID);
+                    assert guild != null;
+                    TextChannel channel = guild.getTextChannelById(MongoDB.instance.collection.find(new Document("guild", guildID)).first().get("globalchat", String.class));
+                    assert channel != null;
+                    channel.sendMessageEmbeds(thumbnail.build()).queue();
+                    channel.sendMessageEmbeds(builder.build()).setActionRows(ActionRow.of(button)).queue();
+                }
+                event.getMessage().delete().queue();
+            } else {
+                EmbedBuilder builder = new EmbedBuilder();
+                EmbedBuilder thumbnail = new EmbedBuilder();
+                thumbnail.setImage("https://cdn.discordapp.com/attachments/711927299515088896/998302889107796048/banner_qandq.png");
+                builder.setDescription("Globale Nachricht");
+                builder.addField("User:", "**" + event.getMember().getUser().getAsTag() + "**", false);
+                builder.addField("Nachricht:", event.getMessage().getContentDisplay(), false);
+                builder.setFooter(event.getGuild().getName(), event.getGuild().getIconUrl());
+                Button button = Button.link("https://discordapp.com/channels/" + event.getGuild().getId() + "/", "Discord Server");
+                for (String guildID : MongoDB.instance.collection.distinct("guild", String.class)) {
+                    assert guildID != null;
+                    Guild guild = DiscordBot.jda.getGuildCache().getElementById(guildID);
+                    assert guild != null;
+                    TextChannel channel = guild.getTextChannelById(MongoDB.instance.collection.find(new Document("guild", guildID)).first().get("globalchat", String.class));
+                    assert channel != null;
+                    channel.sendMessageEmbeds(thumbnail.build()).queue();
+                    channel.sendMessageEmbeds(builder.build()).setActionRows(ActionRow.of(button)).queue();
+                }
+                event.getMessage().delete().queue();
             }
-            event.getMessage().delete().queue();
         }
     }
 }

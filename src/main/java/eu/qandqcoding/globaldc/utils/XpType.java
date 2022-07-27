@@ -18,7 +18,6 @@ public enum XpType {
      }
 
      public int getXp() {
-          int random = new Random().nextInt(3, 5);
-          return new Random().nextInt(xp - 3, xp + random);
+          return xp;
      }
 }

@@ -6,6 +6,9 @@ import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Role;
 import org.bson.Document;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /*
     Created by Andre
     Project DCGlobalBot
@@ -56,33 +59,111 @@ public class LevelManager {
 
     public static Role getRoleByXP(Guild guild, int xp) {
         MongoCollection<Document> collection = getCollectionByGuild(guild);
-        return guild.getRoleById(collection.find(new Document("xptoreach", xp)).first().getString("rolle"));
-    }
-
-    public static Document getRoleDocument(Guild guild, int xptoreach) {
-        MongoCollection<Document> collection = getCollectionByGuild(guild);
-        Document find = new Document("xptoreach", xptoreach);
+        Document find = new Document("xptoreach", xp);
         if (collection.find(find).first() != null) {
-            if(collection.find(find).first().getInteger("xptoreach") == xptoreach){
-                String role = collection.find(find).first().getString("rolle");
-                if (role != null) {
-                    return collection.find(find).first();
-                } else {
-                    return null;
-                }
-            }
-        }
-        return null;
+            return guild.getRoleById(collection.find(new Document("xptoreach", xp)).first().getString("rolle"));
+        } else return null;
     }
 
     public static void resetLevelRole(Member member) {
-        MongoCollection<Document> collection = getCollectionByGuild(member.getGuild());
-        Document found = collection.find(getRoleDocument(member.getGuild(), getXP(member.getGuild(), member))).first();
-        int idBefore = found.getInteger("id") - 1;
-        if (idBefore > 0) {
-            Document toFind = collection.find(new Document("id", idBefore)).first();
-            member.getGuild().removeRoleFromMember(member, getRoleByXP(member.getGuild(), toFind.getInteger("xptoreach")));
+        if (member.getGuild().getId().equals("806123072955875328")) {
+            //5
+            Role _5 = member.getGuild().getRoleById("806451970582904852");
+            if (member.getRoles().contains(_5)) {
+                member.getGuild().removeRoleFromMember(member, _5).queue();
+            }
+            //25
+            Role _25 = member.getGuild().getRoleById("998667218114052198");
+            if (member.getRoles().contains(_25)) {
+                member.getGuild().removeRoleFromMember(member, _25).queue();
+            }
+            //50
+            Role _50 = member.getGuild().getRoleById("998668545883897888");
+            if (member.getRoles().contains(_50)) {
+                member.getGuild().removeRoleFromMember(member, _50).queue();
+            }
+            //75
+            Role _75 = member.getGuild().getRoleById("998670278559285290");
+            if (member.getRoles().contains(_75)) {
+                member.getGuild().removeRoleFromMember(member, _75).queue();
+            }
+            //100
+            Role _100 = member.getGuild().getRoleById("998670278559285290");
+            if (member.getRoles().contains(_100)) {
+                member.getGuild().removeRoleFromMember(member, _100).queue();
+            }
+            //125
+            Role _125 = member.getGuild().getRoleById("998670627072397382");
+            if (member.getRoles().contains(_125)) {
+                member.getGuild().removeRoleFromMember(member, _125).queue();
+
+            }
         }
+    }
+
+    public static int getNextRoleXP(Member member) {
+        Role _5 = member.getGuild().getRoleById("806451970582904852");
+        Role _25 = member.getGuild().getRoleById("998667218114052198");
+        Role _50 = member.getGuild().getRoleById("998668545883897888");
+        Role _75 = member.getGuild().getRoleById("998670278559285290");
+        Role _100 = member.getGuild().getRoleById("998670278559285290");
+        Role _125 = member.getGuild().getRoleById("998670627072397382");
+        MongoCollection<Document> collection = getCollectionByGuild(member.getGuild());
+        if (member.getRoles().contains(_5)) {
+            return 25000;
+        }
+        //25
+        if (member.getRoles().contains(_25)) {
+            return 50000;
+        }
+        //50
+        if (member.getRoles().contains(_50)) {
+            return 75000;
+        }
+        //75
+        if (member.getRoles().contains(_75)) {
+            return 100000;
+        }
+        //100
+        if (member.getRoles().contains(_100)) {
+            return 125000;
+        }
+        //125
+        if (member.getRoles().contains(_125)) {
+            return Integer.MAX_VALUE;
+
+        }
+        return 0;
+    }
+
+    public static Role getRoleFromMember(Member member) {
+        Role _5 = member.getGuild().getRoleById("806451970582904852");
+        Role _25 = member.getGuild().getRoleById("998667218114052198");
+        Role _50 = member.getGuild().getRoleById("998668545883897888");
+        Role _75 = member.getGuild().getRoleById("998670278559285290");
+        Role _100 = member.getGuild().getRoleById("998670278559285290");
+        Role _125 = member.getGuild().getRoleById("998670627072397382");
+        List<Role> roles = new ArrayList<>();
+        roles.addAll(member.getRoles());
+        if(roles.contains(_5)) {
+            return _5;
+        }
+        if(roles.contains(_25)) {
+            return _25;
+        }
+        if(roles.contains(_50)) {
+            return _50;
+        }
+        if(roles.contains(_75)) {
+            return _75;
+        }
+        if(roles.contains(_100)) {
+            return _100;
+        }
+        if(roles.contains(_125)) {
+            return _125;
+        }
+        return null;
     }
 }
 

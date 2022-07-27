@@ -23,33 +23,24 @@ public class VoiceChannelXP extends ListenerAdapter {
 
     @Override
     public void onGuildVoiceJoin(@NotNull GuildVoiceJoinEvent event) {
-        memberTime.put(event.getMember(), 0);
-        countMinutesInChannel(event.getMember());
+
+        MongoCollection<Document> collection = LevelManager.getCollectionByGuild(event.getGuild());
+        if (collection.find(new Document("levelsystem", true)).first() != null) {
+            memberTime.put(event.getMember(), 0);
+            countMinutesInChannel(event.getMember());
+        }
     }
 
     @Override
     public void onGuildVoiceLeave(@NotNull GuildVoiceLeaveEvent event) {
-        memberExecutor.get(event.getMember()).shutdown();
         MongoCollection<Document> collection = LevelManager.getCollectionByGuild(event.getGuild());
         if (collection.find(new Document("levelsystem", true)).first() != null) {
-            LevelManager.addVoiceXP(event.getGuild(), event.getMember(), memberTime.get(event.getMember()));
-            Role role = event.getGuild().getRoleById(LevelManager.getRoleDocument(event.getGuild(), LevelManager.getXP(event.getGuild(), event.getMember())).getString("rolle"));
-            if (role != null) {
-                event.getGuild().addRoleToMember(event.getMember().getUser(), role).queue();
-                EmbedBuilder levelUP = new EmbedBuilder();
-                levelUP.setTitle("LevelBot");
-                levelUP.setColor(Color.GREEN);
-                levelUP.setDescription("Du bist erfolgreich auf Level " + role.getName() + " hochgestuft worden.");
-                event.getMember().getUser().openPrivateChannel().queue(privateChannel -> {
-                    privateChannel.sendMessage("Du hast " + (memberTime.get(event.getMember()) * 5) + " XP für " + memberTime.get(event.getMember()) + " Minuten im Voice erhalten.").queue();
-                    privateChannel.sendMessageEmbeds(levelUP.build()).queue();
-                });
-                LevelManager.resetLevelRole(event.getMember());
-            } else {
-                event.getMember().getUser().openPrivateChannel().queue(privateChannel -> {
-                    privateChannel.sendMessage("Du hast " + (memberTime.get(event.getMember()) * 5) + " XP für " + memberTime.get(event.getMember()) + " Minuten im Voice erhalten.").queue();
-                });
-            }
+            memberExecutor.get(event.getMember()).shutdown();
+
+            event.getMember().getUser().openPrivateChannel().queue(privateChannel -> {
+                privateChannel.sendMessage("Du hast " + (memberTime.get(event.getMember()) * 5) + " XP für " + memberTime.get(event.getMember()) + " Minuten im Voice erhalten.").queue();
+            });
+
         }
     }
 
@@ -60,6 +51,20 @@ public class VoiceChannelXP extends ListenerAdapter {
                 int updateTime = memberTime.get(member);
                 updateTime += 1;
                 memberTime.put(member, updateTime);
+                LevelManager.addVoiceXP(member.getGuild(), member, 1);
+                Role role = LevelManager.getRoleByXP(member.getGuild(), LevelManager.getXP(member.getGuild(), member));
+                if (role != null) {
+                    LevelManager.resetLevelRole(member);
+                    member.getGuild().addRoleToMember(member, role).queue();
+                    EmbedBuilder levelUP = new EmbedBuilder();
+                    levelUP.setTitle("LevelBot");
+                    levelUP.setColor(Color.GREEN);
+                    levelUP.setDescription("Du bist erfolgreich auf Level " + role.getName() + " hochgestuft worden.");
+                    member.getUser().openPrivateChannel().queue(privateChannel -> {
+                        privateChannel.sendMessageEmbeds(levelUP.build()).queue();
+                    });
+                }
+
             }
         };
 
