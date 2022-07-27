@@ -12,53 +12,77 @@ import org.bson.Document;
 */
 public class LevelManager {
 
-     public int message = 10;
+    public int message = 10;
 
-     public static int getXP(Guild guild, Member member) {
-          Document document = getCollectionByGuild(guild).find(new Document("member", member.getId())).first();
-          if (document != null) {
-               return document.getInteger("xp") != null ? document.getInteger("xp") : 0;
-          } else {
-               return 0;
-          }
-     }
+    public static int getXP(Guild guild, Member member) {
+        Document document = getCollectionByGuild(guild).find(new Document("member", member.getId())).first();
+        if (document != null) {
+            return document.getInteger("xp") != null ? document.getInteger("xp") : 0;
+        } else {
+            return 0;
+        }
+    }
 
-     public static void addXP(Guild guild, Member member, XpType type) {
-          Document document = getCollectionByGuild(guild).find(new Document("member", member.getId())).first();
-          if (document == null) {
-               getCollectionByGuild(guild).insertOne(new Document("member", member.getId()).append("xp", type.getXp()));
-          } else {
-               getCollectionByGuild(guild).replaceOne(document, new Document("member", member.getId()).append("xp", getXP(guild, member) + type.getXp()));
-          }
-     }
+    public static void addXP(Guild guild, Member member, XpType type) {
+        Document document = getCollectionByGuild(guild).find(new Document("member", member.getId())).first();
+        if (document == null) {
+            getCollectionByGuild(guild).insertOne(new Document("member", member.getId()).append("xp", type.getXp()));
+        } else {
+            getCollectionByGuild(guild).replaceOne(document, new Document("member", member.getId()).append("xp", getXP(guild, member) + type.getXp()));
+        }
+    }
 
-     public static void removeXP(Guild guild, Member member, XpType type) {
-          Document document = getCollectionByGuild(guild).find(new Document("member", member.getId())).first();
-          if (document == null) {
-               getCollectionByGuild(guild).insertOne(new Document("member", member.getId()).append("xp", type.getXp()));
-          } else {
-               getCollectionByGuild(guild).replaceOne(document, new Document("member", member.getId()).append("xp", getXP(guild, member) - type.getXp()));
-          }
-     }
+    public static void addVoiceXP(Guild guild, Member member, int time) {
+        Document document = getCollectionByGuild(guild).find(new Document("member", member.getId())).first();
+        if (document == null) {
+            getCollectionByGuild(guild).insertOne(new Document("member", member.getId()).append("xp", time * 5));
+        } else {
+            getCollectionByGuild(guild).replaceOne(document, new Document("member", member.getId()).append("xp", getXP(guild, member) + (time * 5)));
+        }
+    }
 
-     public static MongoCollection<Document> getCollectionByGuild(Guild guild) {
-          return MongoDB.instance.database.getCollection(guild.getName() + " | " + guild.getId());
-     }
+    public static void removeXP(Guild guild, Member member, XpType type) {
+        Document document = getCollectionByGuild(guild).find(new Document("member", member.getId())).first();
+        if (document == null) {
+            getCollectionByGuild(guild).insertOne(new Document("member", member.getId()).append("xp", type.getXp()));
+        } else {
+            getCollectionByGuild(guild).replaceOne(document, new Document("member", member.getId()).append("xp", getXP(guild, member) - type.getXp()));
+        }
+    }
 
-     public static Role getRoleByXP(Guild guild, int xp) {
-          MongoCollection<Document> collection = getCollectionByGuild(guild);
-          Document find = new Document("xptoreach", xp);
-          if (collection.find(find).first() != null) {
-               if (collection.find(find).first().getInteger("xptoreach") == xp) {
-                    String rolle = collection.find(find).first().getString("rolle");
-                    if (rolle != null) {
-                         return guild.getRoleById(rolle);
-                    } else {
-                         return null;
-                    }
-               }
-          }
-          return null;
-     }
+    public static MongoCollection<Document> getCollectionByGuild(Guild guild) {
+        return MongoDB.instance.database.getCollection(guild.getName() + " | " + guild.getId());
+    }
+
+    public static Role getRoleByXP(Guild guild, int xp) {
+        MongoCollection<Document> collection = getCollectionByGuild(guild);
+        return guild.getRoleById(collection.find(new Document("xptoreach", xp)).first().getString("rolle"));
+    }
+
+    public static Document getRoleDocument(Guild guild, int xptoreach) {
+        MongoCollection<Document> collection = getCollectionByGuild(guild);
+        Document find = new Document("xptoreach", xptoreach);
+        if (collection.find(find).first() != null) {
+            if(collection.find(find).first().getInteger("xptoreach") == xptoreach){
+                String role = collection.find(find).first().getString("rolle");
+                if (role != null) {
+                    return collection.find(find).first();
+                } else {
+                    return null;
+                }
+            }
+        }
+        return null;
+    }
+
+    public static void resetLevelRole(Member member) {
+        MongoCollection<Document> collection = getCollectionByGuild(member.getGuild());
+        Document found = collection.find(getRoleDocument(member.getGuild(), getXP(member.getGuild(), member))).first();
+        int idBefore = found.getInteger("id") - 1;
+        if (idBefore > 0) {
+            Document toFind = collection.find(new Document("id", idBefore)).first();
+            member.getGuild().removeRoleFromMember(member, getRoleByXP(member.getGuild(), toFind.getInteger("xptoreach")));
+        }
+    }
 }
 

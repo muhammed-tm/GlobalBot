@@ -1,6 +1,7 @@
 package eu.qandqcoding.globaldc;
 
 import eu.qandqcoding.globaldc.listener.MessageReceived;
+import eu.qandqcoding.globaldc.listener.VoiceChannelXP;
 import eu.qandqcoding.globaldc.utils.MongoDB;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
@@ -33,6 +34,7 @@ public class DiscordBot {
           }
           jda.updateCommands().queue();
           jda.addEventListener(new MessageReceived());
+          jda.addEventListener(new VoiceChannelXP());
           List<String> servers = new ArrayList<>();
           for (String guild : MongoDB.instance.collection.distinct("guild", String.class)) {
                servers.add(guild);

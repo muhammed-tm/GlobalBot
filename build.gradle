@@ -36,4 +36,5 @@ shadowJar {
     manifest {
         attributes('Main-Class': 'eu.qandqcoding.globaldc.DiscordBot')
     }
+    compileJava.options.encoding("UTF-8")
 }
