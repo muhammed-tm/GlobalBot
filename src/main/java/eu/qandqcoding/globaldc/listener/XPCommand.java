@@ -58,7 +58,7 @@ public class XPCommand extends ListenerAdapter {
                 g2d.setFont(new Font("Arial", 1, 16));
                 g2d.drawImage(makeRoundedCorner(logo, 150), 17, 17, null);
 
-                g2d.drawString("" + event.getMember().getUser().getName(), 20, 175);
+                g2d.drawString("" + event.getMember().getUser().getName(), 20, 180);
                 if (LevelManager.getRoleFromMember(event.getMember()) != null) {
                     g2d.drawString("" + LevelManager.getRoleFromMember(event.getMember()).getName(), 185, 80);
                 } else {
