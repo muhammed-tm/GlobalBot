@@ -133,7 +133,7 @@ public class LevelManager {
             return Integer.MAX_VALUE;
 
         }
-        return 0;
+        return 500;
     }
 
     public static Role getRoleFromMember(Member member) {
