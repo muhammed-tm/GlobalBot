@@ -149,7 +149,7 @@ public class MessageReceived extends ListenerAdapter {
             if (event.getMember().getId().equalsIgnoreCase("367292204248727553") && event.getMessage().getContentRaw().startsWith("--gnews")) {
                 EmbedBuilder builder = new EmbedBuilder();
                 EmbedBuilder thumbnail = new EmbedBuilder();
-                thumbnail.setImage("https://cdn.discordapp.com/attachments/711927299515088896/998302889107796048/banner_qandq.png");
+                builder.setImage("https://cdn.discordapp.com/attachments/711927299515088896/998302889107796048/banner_qandq.png");
                 builder.setDescription("GLOBALE NEWS");
                 builder.setDescription("Neuigkeiten:" + event.getMessage().getContentDisplay().replace("--gnews", ""));
                 builder.setFooter(event.getGuild().getName(), event.getGuild().getIconUrl());
@@ -160,14 +160,14 @@ public class MessageReceived extends ListenerAdapter {
                     assert guild != null;
                     TextChannel channel = guild.getTextChannelById(MongoDB.instance.collection.find(new Document("guild", guildID)).first().get("globalchat", String.class));
                     assert channel != null;
-                    channel.sendMessageEmbeds(thumbnail.build()).queue();
+                    //channel.sendMessageEmbeds(thumbnail.build()).queue();
                     channel.sendMessageEmbeds(builder.build()).setActionRows(ActionRow.of(button)).queue();
                 }
                 event.getMessage().delete().queue();
             } else {
                 EmbedBuilder builder = new EmbedBuilder();
                 EmbedBuilder thumbnail = new EmbedBuilder();
-                thumbnail.setImage("https://cdn.discordapp.com/attachments/711927299515088896/998302889107796048/banner_qandq.png");
+                builder.setImage("https://cdn.discordapp.com/attachments/711927299515088896/998302889107796048/banner_qandq.png");
                 builder.setDescription("Globale Nachricht");
                 builder.addField("User:", "**" + event.getMember().getUser().getAsTag() + "**", false);
                 builder.addField("Nachricht:", event.getMessage().getContentDisplay(), false);
@@ -179,7 +179,7 @@ public class MessageReceived extends ListenerAdapter {
                     assert guild != null;
                     TextChannel channel = guild.getTextChannelById(MongoDB.instance.collection.find(new Document("guild", guildID)).first().get("globalchat", String.class));
                     assert channel != null;
-                    channel.sendMessageEmbeds(thumbnail.build()).queue();
+                    //channel.sendMessageEmbeds(thumbnail.build()).queue();
                     channel.sendMessageEmbeds(builder.build()).setActionRows(ActionRow.of(button)).queue();
                 }
                 event.getMessage().delete().queue();
