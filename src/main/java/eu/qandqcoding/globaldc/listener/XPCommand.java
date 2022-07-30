@@ -55,8 +55,8 @@ public class XPCommand extends ListenerAdapter {
                 BufferedImage image = ImageIO.read(new URL("https://i.ibb.co/Zm73NFV/Pics-Art-10-21-08-06-54.png"));
                 BufferedImage logo = ImageIO.read(new URL(event.getMember().getUser().getAvatarUrl()));
                 Graphics2D g2d = image.createGraphics();
-                g2d.setFont(new Font("Arial", 1, 16));
-                g2d.drawImage(makeRoundedCorner(logo, 150), 17, 17, null);
+                g2d.setFont(new Font("Arial", Font.BOLD, 16));
+                g2d.drawImage(makeRoundedCorner(logo, 150), 17, 15, null);
 
                 g2d.drawString("" + event.getMember().getUser().getName(), 20, 180);
                 if (LevelManager.getRoleFromMember(event.getMember()) != null) {
@@ -72,8 +72,7 @@ public class XPCommand extends ListenerAdapter {
                 throw new RuntimeException(e);
             }
         } else {
-
-            event.getChannel().sendMessageEmbeds(EmbedGenerator.error("Diese Funktion kommt in Zukunft").build());
+            event.getChannel().sendMessageEmbeds(EmbedGenerator.error("Diese Funktion kommt in Zukunft").build()).queue();
         }
     }
 }
