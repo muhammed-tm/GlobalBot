@@ -1,15 +1,12 @@
 package eu.qandqcoding.globaldc;
 
-import eu.qandqcoding.globaldc.listener.ClearCommand;
 import eu.qandqcoding.globaldc.listener.MessageReceived;
 import eu.qandqcoding.globaldc.listener.VoiceChannelXP;
 import eu.qandqcoding.globaldc.listener.XPCommand;
 import eu.qandqcoding.globaldc.utils.MongoDB;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
-import net.dv8tion.jda.api.OnlineStatus;
 import net.dv8tion.jda.api.entities.Activity;
-import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.events.ReadyEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import net.dv8tion.jda.api.requests.GatewayIntent;
@@ -20,7 +17,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.*;
-import java.util.stream.Collectors;
 
 /*
     Created by Andre
@@ -30,6 +26,7 @@ public class DiscordBot extends ListenerAdapter {
 
     public static JDA jda;
     public static String token = "OTkzNjEyNDk2MzI3OTUwMzk2.G2KGwS.BrhE7tpbsQIte47RMFf356jBlI0DxZgfVd-lqc";
+    int count = 0;
 
     public static void main(String[] args) {
         buildJDA();
@@ -44,7 +41,6 @@ public class DiscordBot extends ListenerAdapter {
         jda.updateCommands().queue();
         jda.addEventListener(new MessageReceived());
         jda.addEventListener(new VoiceChannelXP());
-        jda.addEventListener(new ClearCommand());
         jda.addEventListener(new DiscordBot());
         jda.addEventListener(new XPCommand());
 
@@ -64,11 +60,10 @@ public class DiscordBot extends ListenerAdapter {
         startTimerForActivity();
     }
 
-    int count = 0;
     public void startTimerForActivity() {
         ScheduledExecutorService executorService = Executors.newScheduledThreadPool(1);
         final Runnable actualTask = () -> {
-            if(count > 1) count = 0;
+            if (count > 1) count = 0;
             List<String> servers = new ArrayList<>();
             for (String guild : MongoDB.instance.collection.distinct("guild", String.class)) {
                 servers.add(guild);
