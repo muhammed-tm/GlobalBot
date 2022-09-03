@@ -17,7 +17,7 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 
-public class XPCommand extends ListenerAdapter {
+public class XPLeaderboardCommand extends ListenerAdapter {
 
      public static BufferedImage makeRoundedCorner(BufferedImage image, int cornerRadius) {
           int w = image.getWidth();
@@ -103,8 +103,8 @@ public class XPCommand extends ListenerAdapter {
      @Override
      public void onMessageReceived(@NotNull MessageReceivedEvent event) {
           if (event.getAuthor().isBot()) return;
-          if (event.getMessage().getContentRaw().startsWith("-xp ") && event.getMessage().getMentions().getMembers().size() > 0) {
-               if (event.getGuild().getId().equals("806123072955875328")) {
+          if (event.getGuild().getId().equals("806123072955875328")) {
+               if (event.getMessage().getContentRaw().startsWith("-xp ") && event.getMessage().getMentions().getMembers().size() > 0) {
                     System.out.println("2");
                     try {
                          Member member = event.getMessage().getMentions().getMembers().get(0);
@@ -129,11 +129,7 @@ public class XPCommand extends ListenerAdapter {
                     } catch (IOException e) {
                          throw new RuntimeException(e);
                     }
-               } else {
-                    event.getChannel().sendMessage("Diese Funktion wird noch folgen").queue();
-               }
-          } else if (event.getMessage().getContentRaw().equalsIgnoreCase("-xp")) {
-               if (event.getGuild().getId().equals("806123072955875328")) {
+               } else if (event.getMessage().getContentRaw().equalsIgnoreCase("-xp")) {
                     System.out.println("1");
                     try {
                          int xp = LevelManager.getXP(event.getGuild(), event.getMember());
@@ -163,3 +159,4 @@ public class XPCommand extends ListenerAdapter {
           }
      }
 }
+

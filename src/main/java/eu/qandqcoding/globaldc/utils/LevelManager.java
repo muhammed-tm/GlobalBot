@@ -35,12 +35,12 @@ public class LevelManager {
         }
     }
 
-    public static void addVoiceXP(Guild guild, Member member, int time) {
+    public static void addVoiceXP(Guild guild, Member member, int xp) {
         Document document = getCollectionByGuild(guild).find(new Document("member", member.getId())).first();
         if (document == null) {
-            getCollectionByGuild(guild).insertOne(new Document("member", member.getId()).append("xp", time * 5));
+            getCollectionByGuild(guild).insertOne(new Document("member", member.getId()).append("xp", xp));
         } else {
-            getCollectionByGuild(guild).replaceOne(document, new Document("member", member.getId()).append("xp", getXP(guild, member) + (time * 5)));
+            getCollectionByGuild(guild).replaceOne(document, new Document("member", member.getId()).append("xp", getXP(guild, member) + (xp)));
         }
     }
 
