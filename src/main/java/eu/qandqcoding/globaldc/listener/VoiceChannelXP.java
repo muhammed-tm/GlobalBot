@@ -23,7 +23,6 @@ public class VoiceChannelXP extends ListenerAdapter {
 
      @Override
      public void onGuildVoiceJoin(@NotNull GuildVoiceJoinEvent event) {
-
           MongoCollection<Document> collection = LevelManager.getCollectionByGuild(event.getGuild());
           if (collection.find(new Document("levelsystem", true)).first() != null) {
                memberTime.put(event.getMember(), 0);
