@@ -3,6 +3,7 @@ package eu.qandqcoding.globaldc;
 import eu.qandqcoding.globaldc.listener.MessageReceived;
 import eu.qandqcoding.globaldc.listener.VoiceChannelXP;
 import eu.qandqcoding.globaldc.listener.XPCommand;
+import eu.qandqcoding.globaldc.utils.Config;
 import eu.qandqcoding.globaldc.utils.MongoDB;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
@@ -14,6 +15,8 @@ import net.dv8tion.jda.api.requests.GatewayIntent;
 import org.jetbrains.annotations.NotNull;
 
 import javax.security.auth.login.LoginException;
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -44,6 +47,19 @@ public class DiscordBot extends ListenerAdapter {
           jda.addEventListener(new MessageReceived());
           jda.addEventListener(new VoiceChannelXP());
           jda.addEventListener(new XPCommand());
+          File myObj;
+          try {
+               myObj = new File("config.json");
+               if (myObj.createNewFile()) {
+                    System.out.println("File created: " + myObj.getName());
+               } else {
+                    System.out.println("File already exists.");
+               }
+               Config.init(myObj, false);
+          } catch (IOException e) {
+               System.out.println("An error occurred.");
+               e.printStackTrace();
+          }
 
      }
 

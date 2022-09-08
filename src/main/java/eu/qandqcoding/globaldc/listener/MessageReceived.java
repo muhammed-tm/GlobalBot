@@ -2,10 +2,7 @@ package eu.qandqcoding.globaldc.listener;
 
 import com.mongodb.client.MongoCollection;
 import eu.qandqcoding.globaldc.DiscordBot;
-import eu.qandqcoding.globaldc.utils.EmbedGenerator;
-import eu.qandqcoding.globaldc.utils.LevelManager;
-import eu.qandqcoding.globaldc.utils.MongoDB;
-import eu.qandqcoding.globaldc.utils.XpType;
+import eu.qandqcoding.globaldc.utils.*;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.*;
@@ -16,6 +13,7 @@ import net.dv8tion.jda.api.interactions.components.ActionRow;
 import net.dv8tion.jda.api.interactions.components.buttons.Button;
 import org.bson.Document;
 import org.jetbrains.annotations.NotNull;
+import org.json.JSONException;
 
 import java.awt.*;
 import java.util.ArrayList;
@@ -98,6 +96,19 @@ public class MessageReceived extends ListenerAdapter {
                     }
                }
           }
+          if (event.getMessage().getContentRaw().startsWith("-setverify") && event.getMember().getId().equalsIgnoreCase("367292204248727553")) {
+               String[] args = event.getMessage().getContentRaw().split(" ");
+               if(args.length < 1) {
+                    event.getMessage().delete().queue();
+                    Config.set(event.getGuild().getId() + ".verified", "true");
+                    Config.save();
+               } else {
+                    event.getMessage().delete().queue();
+                    Config.set(args[1] + ".verified", "true");
+                    Config.save();
+               }
+               return;
+          }
           if (event.getMessage().getContentRaw().startsWith("-setlevel")) {
                if (event.getMember().hasPermission(Permission.ADMINISTRATOR)) {
                     if (collection.find(new Document("levelsystem", true)).first() != null) {
@@ -159,10 +170,9 @@ public class MessageReceived extends ListenerAdapter {
                     for (String guildID : MongoDB.instance.collection.distinct("guild", String.class)) {
                          assert guildID != null;
                          Guild guild = DiscordBot.jda.getGuildCache().getElementById(guildID);
-                         if(guild != null) {
+                         if (guild != null) {
                               TextChannel channel = guild.getTextChannelById(MongoDB.instance.collection.find(new Document("guild", guildID)).first().get("globalchat", String.class));
                               assert channel != null;
-                              //channel.sendMessageEmbeds(thumbnail.build()).queue();
                               channel.sendMessageEmbeds(builder.build()).setActionRows(ActionRow.of(button)).queue();
                          }
                     }
@@ -174,16 +184,27 @@ public class MessageReceived extends ListenerAdapter {
                     builder.setDescription("Globale Nachricht");
                     builder.addField("User:", "**" + event.getMember().getUser().getAsTag() + "**", false);
                     builder.addField("Nachricht:", event.getMessage().getContentDisplay(), false);
-                    builder.setFooter(event.getGuild().getName(), event.getGuild().getIconUrl());
-                    Button button = Button.link("https://discordapp.com/channels/" + event.getGuild().getId() + "/", "Discord Server");
+                    if (Boolean.valueOf(Config.get(event.getGuild().getId() + ".verified"))) {
+                         builder.setFooter(event.getGuild().getName() + " | Verifiziert", event.getGuild().getIconUrl());
+                    } else {
+                         builder.setFooter(event.getGuild().getName(), event.getGuild().getIconUrl());
+                    }
+                    String key = event.getGuild().getId() + ".invite";
+                    String inviteLink = "";
+                    try {
+                         inviteLink = Config.get(key);
+                    } catch(JSONException exception) {
+                         Config.set(key, event.getChannel().asTextChannel().createInvite().complete().getUrl());
+                         Config.save();
+                         inviteLink = event.getChannel().asTextChannel().createInvite().complete().getUrl();
+                    }
+                    Button button = Button.link(inviteLink, "Discord Server");
                     for (String guildID : MongoDB.instance.collection.distinct("guild", String.class)) {
                          assert guildID != null;
-                         System.out.println(guildID);
                          Guild guild = DiscordBot.jda.getGuildById(guildID);
-                         if(guild != null) {
+                         if (guild != null) {
                               TextChannel channel = guild.getTextChannelById(MongoDB.instance.collection.find(new Document("guild", guildID)).first().get("globalchat", String.class));
                               assert channel != null;
-                              //channel.sendMessageEmbeds(thumbnail.build()).queue();
                               channel.sendMessageEmbeds(builder.build()).setActionRows(ActionRow.of(button)).queue();
                          }
                     }
