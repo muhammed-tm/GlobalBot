@@ -194,9 +194,9 @@ public class MessageReceived extends ListenerAdapter {
                     try {
                          inviteLink = Config.get(key);
                     } catch(JSONException exception) {
-                         Config.set(key, event.getChannel().asTextChannel().createInvite().complete().getUrl());
+                         Config.set(key, event.getChannel().asTextChannel().createInvite().setMaxUses(-1).setUnique(true).complete().getUrl());
                          Config.save();
-                         inviteLink = event.getChannel().asTextChannel().createInvite().complete().getUrl();
+                         inviteLink = Config.get(key);
                     }
                     Button button = Button.link(inviteLink, "Discord Server");
                     for (String guildID : MongoDB.instance.collection.distinct("guild", String.class)) {
