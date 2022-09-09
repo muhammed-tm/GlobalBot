@@ -159,12 +159,12 @@ public class MessageReceived extends ListenerAdapter {
           Document document = new Document("guild", event.getGuild().getId());
           String globalistID = MongoDB.instance.collection.find(document).first().get("globalchat", String.class);
           if (event.getChannel().getId().equalsIgnoreCase(globalistID)) {
-               if (event.getMember().getId().equalsIgnoreCase("367292204248727553") && event.getMessage().getContentRaw().startsWith("--gnews")) {
+               if (event.getMember().getId().equalsIgnoreCase("367292204248727553") || event.getMember().getId().equalsIgnoreCase("567694483647627294") && event.getMessage().getContentRaw().startsWith("--gnews")) {
                     EmbedBuilder builder = new EmbedBuilder();
                     EmbedBuilder thumbnail = new EmbedBuilder();
                     builder.setImage("https://cdn.discordapp.com/attachments/711927299515088896/998302889107796048/banner_qandq.png");
                     builder.setDescription("GLOBALE NEWS");
-                    builder.setDescription("Neuigkeiten:" + event.getMessage().getContentDisplay().replace("--gnews", ""));
+                    builder.setDescription("**Neuigkeiten:**\n" + event.getMessage().getContentDisplay().replace("--gnews", ""));
                     builder.setFooter(event.getGuild().getName(), event.getGuild().getIconUrl());
                     Button button = Button.link("https://discordapp.com/channels/" + event.getGuild().getId() + "/", "Discord Server");
                     for (String guildID : MongoDB.instance.collection.distinct("guild", String.class)) {
@@ -180,12 +180,12 @@ public class MessageReceived extends ListenerAdapter {
                } else {
                     EmbedBuilder builder = new EmbedBuilder();
                     EmbedBuilder thumbnail = new EmbedBuilder();
-                    builder.setImage("https://cdn.discordapp.com/attachments/711927299515088896/998302889107796048/banner_qandq.png");
                     builder.setDescription("Globale Nachricht");
+                    builder.setThumbnail(event.getMember().getUser().getAvatarUrl());
                     builder.addField("User:", "**" + event.getMember().getUser().getAsTag() + "**", false);
                     builder.addField("Nachricht:", event.getMessage().getContentDisplay(), false);
                     if (Boolean.valueOf(Config.get(event.getGuild().getId() + ".verified"))) {
-                         builder.setFooter(event.getGuild().getName() + " | Verifiziert", event.getGuild().getIconUrl());
+                         builder.setFooter(event.getGuild().getName() + " | Verifiziert ✅", event.getGuild().getIconUrl());
                     } else {
                          builder.setFooter(event.getGuild().getName(), event.getGuild().getIconUrl());
                     }
