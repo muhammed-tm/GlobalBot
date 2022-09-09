@@ -181,7 +181,7 @@ public class MessageReceived extends ListenerAdapter {
                     EmbedBuilder builder = new EmbedBuilder();
                     EmbedBuilder thumbnail = new EmbedBuilder();
                     builder.setDescription("Globale Nachricht");
-                    builder.setThumbnail(event.getMember().getUser().getAvatarUrl());
+                    builder.setThumbnail(event.getMember().getUser().getEffectiveAvatarUrl());
                     builder.addField("User:", "**" + event.getMember().getUser().getAsTag() + "**", false);
                     builder.addField("Nachricht:", event.getMessage().getContentDisplay(), false);
                     if (Boolean.valueOf(Config.get(event.getGuild().getId() + ".verified"))) {
