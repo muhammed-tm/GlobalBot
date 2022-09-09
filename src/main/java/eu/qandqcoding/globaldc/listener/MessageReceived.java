@@ -43,7 +43,9 @@ public class MessageReceived extends ListenerAdapter {
                     member.getUser().openPrivateChannel().queue(privateChannel -> {
                          EmbedBuilder builder = new EmbedBuilder();
                          builder.setTitle("QandQCoding GlobalBot");
-                         builder.setDescription("Wie richte ich den Bot ein?");
+                         builder.setDescription("× Mit dem Global-Chat kannst du serverweit mit anderen Usern auf ganz Discord chatten. \n" +
+                                 "Der Bot teilt Nachrichten aus diesem Kanal mit vielen anderen Servern, wodurch User nicht zwingend auf dem Server sein müssen, um am Chat teilzunehmen. \n" +
+                                 "Der Grund warum alle deine Nachrichten in so einer Art \"Boxen\" (Embeds) gesetzt wird ist simpel: Der Chat wird von einem anderen Team moderiert und soll nicht langweilig für fremde Server aussehen. \uD83D\uDC40 \n Wie richte ich den Bot ein?");
                          builder.setColor(Color.WHITE);
                          builder.addField("Levelsystem (de)aktivieren", "-togglelevel", false);
                          builder.addField("LevelSystem Rolle festlegen", "-setlevel <Rollenid> <XP>", false);
