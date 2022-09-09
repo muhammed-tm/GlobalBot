@@ -73,7 +73,6 @@ public class DiscordBot extends ListenerAdapter {
         }
         jda.getPresence().setPresence(Activity.listening(servers.size() + " Servern "), true);
         startTimerForActivity();
-        startTimerForGlobalBotMembers();
         //jda.updateCommands().queue();
         jda.getGuildById("806123072955875328").upsertCommand("xp", "Schaue dir deine XP an").addOption(OptionType.MENTIONABLE, "user", "Gebe einen User an von dem du die XP erfahren möchtest", false).queue();
 
@@ -111,46 +110,6 @@ public class DiscordBot extends ListenerAdapter {
             }
         }, 10, 10, TimeUnit.SECONDS);
 
-
-    }
-
-    public void startTimerForGlobalBotMembers() {
-        ScheduledExecutorService executorService = Executors.newScheduledThreadPool(1);
-        final Runnable actualTask = () -> {
-            List<String> server = new ArrayList<>();
-            for (String guild : MongoDB.instance.collection.distinct("guild", String.class)) {
-                server.add(guild);
-            }
-            int members = 0;
-            for (String servers : server) {
-                members += jda.getGuildById(servers).getMemberCount();
-            }
-            try {
-                // open a connection to the site
-                URL url = new URL("https://www.qandqcoding.de/datas.php");
-                URLConnection con = url.openConnection();
-                // activate the output
-                con.setDoOutput(true);
-                PrintStream ps = new PrintStream(con.getOutputStream());
-                // send your parameters to your site
-                ps.print("&Members=" + members);
-
-                // we have to get the input stream in order to actually send the request
-                con.getInputStream();
-                // print out to confirm
-                BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream()));
-                String line = null;
-                while ((line = in.readLine()) != null) {
-                    System.out.println(line);
-                    // close the print stream
-                    ps.close();
-                }
-            } catch (MalformedURLException e) {
-                throw new RuntimeException(e);
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
-        };
 
         executorService.scheduleWithFixedDelay(new Runnable() {
             private final ExecutorService executor = Executors.newSingleThreadExecutor();
