@@ -31,7 +31,7 @@ import java.util.concurrent.*;
 public class DiscordBot extends ListenerAdapter {
 
     public static JDA jda;
-    public static String token = "OTkzNjEyNDk2MzI3OTUwMzk2.G2KGwS.BrhE7tpbsQIte47RMFf356jBlI0DxZgfVd-lqc";
+    public static String token = "";
     int count = 0;
 
     public static void main(String[] args) {
